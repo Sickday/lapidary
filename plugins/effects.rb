@@ -1,4 +1,4 @@
-@@effects = [
+[
   {:id => 4079, :hook => :item_click, :anim => 1457}, # Play yo-yo
   {:id => 6865, :hook => :item_click, :anim => 3003, :graphic => 511, :gdelay => 2}, # Jump Marionette(blue)
   {:id => 6866, :hook => :item_click, :anim => 3003, :graphic => 515, :gdelay => 2}, # Jump Marionette(green)
@@ -13,9 +13,7 @@
   {:id => 6865, :hook => :item_alt2, :anim => 3005, :graphic => 513, :gdelay => 2}, # Bow Marionette(blue)
   {:id => 6866, :hook => :item_alt2, :anim => 3005, :graphic => 517, :gdelay => 2}, # Bow Marionette(green)
   {:id => 6867, :hook => :item_alt2, :anim => 3005, :graphic => 509, :gdelay => 2}  # Bow Marionette(red)
-]
-
-@@effects.each {|item|
+].each {|item|
   method("on_#{item[:hook]}").call(item[:id]) {|player, slot|
     if item.include?(:anim)
       player.play_animation Calyx::Model::Animation.new(item[:anim], item[:adelay] || 0)
