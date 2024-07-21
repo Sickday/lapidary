@@ -1,24 +1,59 @@
 GEM
-  remote: http://rubygems.org/
+  remote: https://www.rubygems.org/
   specs:
-    eventmachine (0.12.10)
-    little-plugger (1.1.3)
-    logging (1.7.1)
-      little-plugger (>= 1.1.3)
-    rufus-scheduler (2.0.16)
-      tzinfo (>= 0.3.23)
-    sqlite3 (1.3.5)
-    to_regexp (0.1.1)
-    tzinfo (0.3.32)
-    xml-simple (1.1.1)
+    concurrent-ruby (1.3.3)
+    et-orbi (1.2.11)
+      tzinfo
+    eventmachine (1.2.7)
+    fugit (1.11.0)
+      et-orbi (~> 1, >= 1.2.11)
+      raabro (~> 1.4)
+    little-plugger (1.1.4)
+    logging (2.4.0)
+      little-plugger (~> 1.1)
+      multi_json (~> 1.14)
+    multi_json (1.15.0)
+    raabro (1.4.0)
+    rexml (3.3.2)
+      strscan
+    rufus-scheduler (3.9.1)
+      fugit (~> 1.1, >= 1.1.6)
+    sqlite3 (2.0.2-aarch64-linux-gnu)
+    sqlite3 (2.0.2-aarch64-linux-musl)
+    sqlite3 (2.0.2-arm-linux-gnu)
+    sqlite3 (2.0.2-arm-linux-musl)
+    sqlite3 (2.0.2-arm64-darwin)
+    sqlite3 (2.0.2-x86-linux-gnu)
+    sqlite3 (2.0.2-x86-linux-musl)
+    sqlite3 (2.0.2-x86_64-darwin)
+    sqlite3 (2.0.2-x86_64-linux-gnu)
+    sqlite3 (2.0.2-x86_64-linux-musl)
+    strscan (3.1.0)
+    to_regexp (0.2.1)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
+    xml-simple (1.1.9)
+      rexml
 
 PLATFORMS
-  ruby
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux-gnu
+  arm-linux-musl
+  arm64-darwin
+  x86-linux-gnu
+  x86-linux-musl
+  x86_64-darwin
+  x86_64-linux-gnu
+  x86_64-linux-musl
 
 DEPENDENCIES
-  eventmachine (~> 0.12)
-  logging (~> 1.3)
-  rufus-scheduler (~> 2.0)
-  sqlite3 (~> 1.3)
-  to_regexp (~> 0.1)
-  xml-simple (~> 1.1)
+  eventmachine (~> 1.2.7)
+  logging (~> 2.4.0)
+  rufus-scheduler
+  sqlite3 (~> 2.0.2)
+  to_regexp (~> 0.2.1)
+  xml-simple (~> 1.1.9)
+
+BUNDLED WITH
+   2.5.9

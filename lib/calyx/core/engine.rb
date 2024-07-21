@@ -1,7 +1,7 @@
 module Calyx::Engine
   class EventManager
     def initialize
-      @scheduler = Rufus::Scheduler::PlainScheduler.start_new
+      @scheduler = Rufus::Scheduler.new
     end
      
     def submit(event)
