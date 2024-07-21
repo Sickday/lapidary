@@ -1,5 +1,6 @@
 source 'https://www.rubygems.org'
 
+gem 'benchmark'
 gem 'eventmachine', '~> 1.2.7'
 gem 'sqlite3', '~> 2.0.2'
 gem 'to_regexp', '~> 0.2.1'
