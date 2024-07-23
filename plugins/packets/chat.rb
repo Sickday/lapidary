@@ -10,12 +10,12 @@ on_packet(4) {|player, packet|
   #next if player.chat_queue.size >= @@queue_size
       
   # Unpack string
-  copy = Calyx::Net::Packet.new(nil, nil, packet.buffer.clone)
+  copy = Lapidary::Net::Packet.new(nil, nil, packet.buffer.clone)
   raw_data = copy.read_bytes(size).unpack("C" * size)
   chat_data = (0...size).collect {|i| (raw_data[size - i - 1] - 128).byte }
-  message = Calyx::Misc::TextUtils.unpack(chat_data, chat_data.size)
-  message = Calyx::Misc::TextUtils.filter(message)
-  message = Calyx::Misc::TextUtils.optimize(message)
+  message = Lapidary::Misc::TextUtils.unpack(chat_data, chat_data.size)
+  message = Lapidary::Misc::TextUtils.filter(message)
+  message = Lapidary::Misc::TextUtils.optimize(message)
   
   default = true
   
@@ -25,9 +25,9 @@ on_packet(4) {|player, packet|
   
   # Send to all clients
   if default
-    packed = Calyx::Misc::TextUtils.repack(size, packet)
+    packed = Lapidary::Misc::TextUtils.repack(size, packet)
     packed = packed.pack("C" * packed.size)
-    player.chat_queue << Calyx::Model::ChatMessage.new(color, effect, packed)
+    player.chat_queue << Lapidary::Model::ChatMessage.new(color, effect, packed)
   end
 }
 

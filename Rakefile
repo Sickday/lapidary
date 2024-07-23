@@ -5,9 +5,9 @@ desc "Run the server application"
 task :run do
   $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "lib"))
 
-  require 'calyx'
+  require 'lapidary'
 
-  WORLD = Calyx::World::World.new
-  SERVER = Calyx::Server.new
-  SERVER.start_config(Calyx::Misc::HashWrapper.new({:port => 43594}))
+  WORLD = Lapidary::World::World.new
+  SERVER = Lapidary::Server.new
+  SERVER.start_config(Lapidary::Misc::HashWrapper.new({:port => 43594}))
 end
