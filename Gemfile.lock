@@ -14,6 +14,7 @@ GEM
       multi_json (~> 1.14)
     multi_json (1.15.0)
     raabro (1.4.0)
+    rake (13.2.1)
     rexml (3.3.2)
       strscan
     rufus-scheduler (3.9.1)
@@ -50,6 +51,7 @@ PLATFORMS
 DEPENDENCIES
   eventmachine (~> 1.2.7)
   logging (~> 2.4.0)
+  rake
   rufus-scheduler
   sqlite3 (~> 2.0.2)
   to_regexp (~> 0.2.1)
