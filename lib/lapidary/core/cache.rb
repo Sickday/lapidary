@@ -8,7 +8,7 @@ module Lapidary::Misc
     def initialize(path)
       # Find how many index files exist
       count = 0.upto(255).each do |i|
-        break i unless FileTest.exists?(file_path("main_file_cache.idx#{i}", path))
+        break i unless File.exist?(file_path("main_file_cache.idx#{i}", path))
       end
       
       # Make sure the user has added the cache files
