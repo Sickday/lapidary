@@ -171,8 +171,8 @@ module Lapidary::World
       begin
         key = Lapidary::Misc::NameUtils.format_name_protocol(player.name)
         
-        profile = if FileTest.exists?("./data/profiles/#{key}.yaml")
-          YAML::load(File.open("./data/profiles/#{key}.yaml"))
+        profile = if File.exist?("./data/profiles/#{key}.yaml")
+          YAML::load(File.open("./data/profiles/#{key}.yaml", permitted_classes: [Lapidary::World::Profile], aliases: true))
         else
           nil
         end
