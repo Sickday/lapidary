@@ -5,21 +5,21 @@ module Lapidary::Misc
     DATA_HEADER_SIZE = 8
     DATA_SIZE = DATA_BLOCK_SIZE + DATA_HEADER_SIZE
     
-    def initialize(path)
+    def initialize(path, version)
       # Find how many index files exist
       count = 0.upto(255).each do |i|
-        break i unless File.exist?(file_path("main_file_cache.idx#{i}", path))
+        break i unless File.exist?(file_path("main_file_cache.idx#{i}", "#{path}/#{version}"))
       end
       
       # Make sure the user has added the cache files
-      raise "Cache files not installed! Please place them in the 'data/cache' directory" if count == 0
+      raise "Cache files not installed! Please place them in the 'data/cache/<version>' directory" if count == 0
       
       # Gather file objects
-      @data_file = File.open(file_path("main_file_cache.dat", path), "r")
+      @data_file = File.open(file_path("main_file_cache.dat", "#{path}/#{version}"), "r")
       @index_files = []
       
       count.times do |i|
-        @index_files << File.open(file_path("main_file_cache.idx#{i}", path), "r")
+        @index_files << File.open(file_path("main_file_cache.idx#{i}", "#{path}/#{version}"), "r")
       end
     end
     
