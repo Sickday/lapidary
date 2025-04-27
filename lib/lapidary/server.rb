@@ -10,7 +10,7 @@ module Lapidary
       @max_players = 1000
       setup_logger
     end
-
+    
     def setup_logger
       Logging.color_scheme( 'bright',
         :levels => {
@@ -23,7 +23,7 @@ module Lapidary
         :logger => :white,
         :message => :white
       )
-
+    
       Logging.logger.root.add_appenders(
         Logging.appenders.stdout(
           'stdout',
@@ -33,10 +33,10 @@ module Lapidary
         )),
         Logging.appenders.file('data/logs/development.log', :layout => Logging.layouts.pattern(:pattern => '[%d] %-5l %c: %m\n'))
       )
-
+      
       @log = Logging.logger['server']
     end
-
+  
     def start_config(config)
       @config = config
       init_cache
@@ -46,48 +46,48 @@ module Lapidary
       load_config
       bind
     end
-
+    
     def reload
       HOOKS.clear
       load_hooks
       load_int_hooks
       Lapidary::Net.load_packets
     end
-
+    
     # Load hooks
     def load_hooks
-      Dir['./plugins/*.rb'].each {|file| load file }
+      Dir["./plugins/*.rb"].each {|file| load file }
     end
-
+    
     def load_int_hooks
-      Dir['./plugins/internal/*.rb'].each {|file| load file }
+      Dir["./plugins/internal/*.rb"].each {|file| load file }
     end
-
+    
     def init_cache
       begin
-        $cache = Lapidary::Misc::Cache.new('./data/cache/', @version)
+        $cache = Lapidary::Misc::Cache.new("./data/cache/")
       rescue Exception => e
         $cache = nil
         Logging.logger['cache'].warn e.to_s
       end
     end
-
+    
     def load_defs
       Lapidary::Item::ItemDefinition.load
-
+      
       # Equipment
       Lapidary::Equipment.load
     end
-
+    
     def load_config
       WORLD.shop_manager.load_shops
       WORLD.door_manager.load_single_doors
       WORLD.door_manager.load_double_doors
-
+      
       Lapidary::World::NPCSpawns.load
       Lapidary::World::ItemSpawns.load
     end
-
+    
     # Binds the server socket and begins accepting player connections.
     def bind
       EventMachine.run do
