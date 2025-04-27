@@ -8,6 +8,6 @@ task :run do
   require 'lapidary'
 
   WORLD = Lapidary::World::World.new
-  SERVER = Lapidary::Server.new
+  SERVER = Lapidary::Server.new(317)
   SERVER.start_config(Lapidary::Misc::HashWrapper.new({:port => 43594}))
 end
