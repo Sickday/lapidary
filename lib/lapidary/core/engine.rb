@@ -11,9 +11,9 @@ module Lapidary::Engine
     private
      
     def submit_delayed(event, delay)
-      @scheduler.in("#{delay}") {|job|
+      @scheduler.in(delay.to_s) do |job|
         start = Time.now
-         
+
         if event.running
           resubmit = true
           
@@ -31,12 +31,12 @@ module Lapidary::Engine
             elapsed = Time.now - start
             remaining = event.delay - elapsed
             remaining = 0 if remaining <= 0
-            submit_delayed event, remaining.round
+            submit_delayed event, remaining.floor
           end
         else
           job.unschedule
         end
-      }
+      end
     end
   end
   
