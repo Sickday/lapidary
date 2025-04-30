@@ -2,10 +2,16 @@ require 'logging'
 require 'eventmachine'
 require 'sqlite3'
 require 'rufus/scheduler'
+require 'singleton'
 require 'ostruct'
+require 'socket'
+require 'zlib'
 
 module Lapidary
-  autoload :Server,             'lapidary/server'
+  VERSION = 317
+
+
+  autoload :Reactor,             'lapidary/reactor'
   
   module Engine
     autoload :EventManager,     'lapidary/core/engine'
@@ -15,7 +21,22 @@ module Lapidary
     autoload :Action,           'lapidary/core/engine' # TODO move to Actions
     autoload :ActionQueue,      'lapidary/core/engine' # TODO move to Actions
   end
-  
+
+  module Patches
+    autoload :IntegerRefinements, 'lapidary/patches/integer_refinements'
+    autoload :StringRefinements,  'lapidary/patches/string_refinements'
+    autoload :SetRefinements,     'lapidary/patches/set_refinements'
+  end
+
+  module Cache
+    autoload :FileDescriptor,    'lapidary/cache/file_descriptor'
+    autoload :FileSystem,        'lapidary/cache/file_system'
+    autoload :Index,             'lapidary/cache/index'
+    autoload :UpdateServer,      'lapidary/cache/update_server'
+    autoload :JaggrabConnection, 'lapidary/cache/jaggrab'
+    autoload :OnDemandConnection,'lapidary/cache/ondemand'
+  end
+
   module Misc
     autoload :AutoHash,            'lapidary/core/util'
     autoload :HashWrapper,         'lapidary/core/util'
@@ -120,6 +141,8 @@ module Lapidary
     autoload :NPCSpawns,           'lapidary/world/npc_spawns'
     autoload :ItemSpawns,          'lapidary/world/item_spawns'
   end
+
+  def self.reactor; Lapidary::Reactor.instance; end
 end
 
 require 'lapidary/plugin_hooks'
