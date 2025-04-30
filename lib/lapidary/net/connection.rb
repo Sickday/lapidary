@@ -47,9 +47,10 @@ module Lapidary::Net
     0, 0, 6, 6, 0, 0, 0            # 250
   ]
   
-  LOG = Logging.logger['net']
-  
+
   class Connection < EM::Connection
+    include Lapidary::Misc::Logging
+
     # The current state of the connection.
     attr :state
     
@@ -62,19 +63,20 @@ module Lapidary::Net
     # Called when the connection has been opened.
     def post_init
       @state = :opcode
-      @buffer = Packet.new(-1, :RAW, "")
+      @buffer = Packet.new(-1, :RAW, '')
       @popcode = -1
       @psize = -1
       port, @ip = Socket.unpack_sockaddr_in(get_peername)
+      @log = set_logger_name
       
       response, throttled = should_throttle
       
       if throttled
-        LOG.warn "Throttling connection"
-        send_data ([0] * 8 + [response]).pack("C" * 9)
+        @log.warn 'Throttling connection'
+        send_data ([0] * 8 + [response]).pack('C' * 9)
         close_connection_after_writing
       else
-        LOG.debug "Connection opened"
+        @log.debug 'Connection opened'
       end
     end
     
@@ -96,7 +98,7 @@ module Lapidary::Net
         return 9, true
       end
       
-      LOG.debug "#{CONNECTION_COUNTS[@ip]} connections now from #{@ip}"
+      @log.debug "#{CONNECTION_COUNTS[@ip]} connections now from #{@ip}"
       
       return 0, false
     end
@@ -108,11 +110,11 @@ module Lapidary::Net
           super data.buffer
         else
           out_buffer = [data.opcode+@session.out_cipher.next_value.ubyte]
-          out_types = "C"
+          out_types = 'C'
           
           if data.type != :FIXED
             out_buffer << data.buffer.size
-            out_types << (data.type == :VARSH ? "n" : "C")
+            out_types << (data.type == :VARSH ? 'n' : 'C')
           end
           
           super out_buffer.pack(out_types) + data.buffer
@@ -139,17 +141,17 @@ module Lapidary::Net
           opcode = @buffer.read_byte
 
           if opcode == OPCODE_PLAYERCOUNT
-            LOG.debug "Connection type: online"
-            send_data [WORLD.players.size].pack("n")
+            @log.debug 'Connection type: online'
+            send_data [WORLD.players.size].pack('n')
             close_connection true
           elsif opcode == OPCODE_UPDATE
-            LOG.debug "Connection type: update"
-            send_data (Array.new(8, 0)).pack("C" * 8)
+            @log.debug 'Connection type: update'
+            send_data (Array.new(8, 0)).pack('C' * 8)
             @state = :update
           elsif check_failed(opcode == OPCODE_GAME, "Invalid opcode: #{opcode}")
             return
           else
-            LOG.debug "Connection type: client"
+            @log.debug 'Connection type: client'
             @state = :login
           end
         end
@@ -163,20 +165,20 @@ module Lapidary::Net
           @state = :precrypted
 
           # Server update check
-          return if check_failed(Lapidary.reactor.updatemode == false, "Server is in update mode"){
-            send_data (Array.new(8, 0) + [14]).pack("C" * 8 + "C")
+          return if check_failed(Lapidary.reactor.updatemode == false, 'Server is in update mode'){
+            send_data (Array.new(8, 0) + [14]).pack('C' * 8 + 'C')
           }
           
           # World full check
-          return if check_failed(WORLD.players.size < Lapidary.reactor.max_players, "World full"){
-            send_data (Array.new(8, 0) + [7]).pack("C" * 8 + "C")
+          return if check_failed(WORLD.players.size < Lapidary.reactor.max_players, 'World full'){
+            send_data (Array.new(8, 0) + [7]).pack('C' * 8 + 'C')
           }
           
           # Send response
           response = Array.new(8, 0)
           response << 0
           response << @server_key
-          send_data response.pack("C" * 8 + "C" + "q")
+          send_data response.pack('C' * 8 + 'C' + 'q')
         end
       when :precrypted
         if @buffer.length >= 2
@@ -202,7 +204,7 @@ module Lapidary::Net
           # Version
           version = @buffer.read_short.ushort
           return if check_failed(version == Lapidary::VERSION, "Incorrect client version: #{version}"){
-            send_data [6].pack("C")
+            send_data [6].pack('C')
           }
 
           # Low memory
@@ -221,9 +223,9 @@ module Lapidary::Net
           # Check to see that the keys match
           client_key = [@buffer.read_int, @buffer.read_int]
           server_key = [@buffer.read_int, @buffer.read_int]
-          reported_server_key = server_key.pack("NN").unpack("q").first
+          reported_server_key = server_key.pack('NN').unpack('q').first
           return if check_failed(reported_server_key == @server_key, "Server key mismatch (expected: #{@server_key}, reported: #{reported_server_key})"){
-            send_data [10].pack("C") # "Bad session id"
+            send_data [10].pack('C') # "Bad session id"
           }
 
           # Read credentials
@@ -231,10 +233,10 @@ module Lapidary::Net
           username = Lapidary::Misc::NameUtils.format_name_protocol(@buffer.read_str)
           password = @buffer.read_str
           return if check_failed(Lapidary::Misc::NameUtils.valid_name?(username), "Username is not valid: #{username}"){
-            send_data [11].pack("C")
+            send_data [11].pack('C')
           }
  
-          LOG.debug "Username: #{username}"
+          @log.debug "Username: #{username}"
 
           # Set up cipher
           session_key = client_key + server_key
@@ -285,8 +287,8 @@ module Lapidary::Net
         begin
           Lapidary::Net.handle_packet(@session.player, packet)
         rescue Exception => e
-          LOG.error "Error processing packet"
-          LOG.error e
+          @log.error 'Error processing packet'
+          @log.error e
         end
       }
     end
@@ -295,7 +297,7 @@ module Lapidary::Net
     # Additionally, the connection will be closed if false, and only after writing if a block exists.
     def check_failed(exp, msg, &blk)
       unless exp
-        LOG.error msg
+        @log.error msg
         blk and yield blk
         close_connection blk != nil
       end
@@ -304,7 +306,7 @@ module Lapidary::Net
     
     # Called when the connection has been closed.
     def unbind
-      LOG.info "Connection closed"
+      @log.info 'Connection closed'
       
       if CONNECTION_COUNTS.include?(@ip)
         count = CONNECTION_COUNTS[@ip]

@@ -1,6 +1,7 @@
 module Lapidary
   class Reactor
     include Singleton
+    include Lapidary::Misc::Logging
 
     attr_reader :file_system
     attr_accessor :updatemode
@@ -15,35 +16,8 @@ module Lapidary
       @ondemand_signature = nil
       @game_signature = nil
 
-      setup_logger
+      @log = setup_logging
     end
-
-    def setup_logger
-      Logging.color_scheme( 'bright',
-        :levels => {
-          :info  => :green,
-          :warn  => :yellow,
-          :error => :red,
-          :fatal => [:white, :on_red]
-        },
-        :date => :white,
-        :logger => :white,
-        :message => :white
-      )
-    
-      Logging.logger.root.add_appenders(
-        Logging.appenders.stdout(
-          'stdout',
-          :layout => Logging.layouts.pattern(
-          :pattern => '[%d] %-5l %c: %m\n',
-          :color_scheme => 'bright'
-        )),
-        Logging.appenders.file('data/logs/development.log', :layout => Logging.layouts.pattern(:pattern => '[%d] %-5l %c: %m\n'))
-      )
-      
-      @log = Logging.logger['server']
-    end
-  
     def start_config(config)
       @config = config
       load_cache

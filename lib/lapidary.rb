@@ -12,7 +12,7 @@ module Lapidary
 
 
   autoload :Reactor,             'lapidary/reactor'
-  
+
   module Engine
     autoload :EventManager,     'lapidary/core/engine'
     autoload :Event,            'lapidary/core/engine'
@@ -45,6 +45,7 @@ module Lapidary
     autoload :NameUtils,           'lapidary/core/util'
     autoload :ThreadPool,          'lapidary/core/util'
     autoload :Cache,               'lapidary/core/cache'
+    autoload :Logging,             'lapidary/core/logging'
   end
   
   module Actions
@@ -141,6 +142,10 @@ module Lapidary
     autoload :NPCSpawns,           'lapidary/world/npc_spawns'
     autoload :ItemSpawns,          'lapidary/world/item_spawns'
   end
+
+  # A module-level logger instance.
+  # @return [Console::Logger] the global logger
+  def self.log; Console.logger; end
 
   def self.reactor; Lapidary::Reactor.instance; end
 end

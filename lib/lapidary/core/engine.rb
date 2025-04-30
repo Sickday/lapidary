@@ -1,7 +1,11 @@
 module Lapidary::Engine
   class EventManager
+    include Lapidary::Misc::Logging
+
+
     def initialize
       @scheduler = Rufus::Scheduler.new
+      @log = set_logger_name
     end
      
     def submit(event)
@@ -19,10 +23,9 @@ module Lapidary::Engine
           
           begin
             event.execute
-          rescue Exception => e
-            log = Logging.logger['exec']
-            log.error "Error processing event"
-            log.error e
+          rescue StandardError => e
+            @log.error "Error processing event"
+            @log.error e
             job.unschedule
             resubmit = false
           end
