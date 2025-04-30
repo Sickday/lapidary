@@ -310,10 +310,9 @@ module Lapidary::Misc
               @active = true
               begin
                 block.call(*args)
-              rescue Exception => e
-                log = Logging.logger['exec']
-                log.error "Threadpool error"
-                log.error e
+              rescue StandardError => e
+                puts "Threadpool error: #{e}"
+                puts e.backtrace&.join("\n")
               end
               block.complete = true
             else

@@ -3,10 +3,9 @@ require 'yaml'
 module Lapidary::World
   RIGHTS = [:player, :mod, :admin, :owner]
 
-  PROFILE_LOG = Logging.logger['profile']
-  PLUGIN_LOG  = Logging.logger['plugin']
-
   class World
+    include Lapidary::Misc::Logging
+
     attr :players
     attr :npcs
     attr :region_manager
@@ -73,8 +72,8 @@ module Lapidary::World
         begin
           v.call(player)
         rescue Exception => e
-          PLUGIN_LOG.error "Unable to run login hook #{k}"
-          PLUGIN_LOG.error e
+          @log.error "Unable to run login hook #{k}"
+          @log.error e
         end
       }
 
@@ -87,8 +86,8 @@ module Lapidary::World
           begin
             v.call(player)
           rescue Exception => e
-            PLUGIN_LOG.error "Unable to run logout hook #{k}"
-            PLUGIN_LOG.error e
+            @log.error "Unable to run logout hook #{k}"
+            @log.error e
           end
         }
 
@@ -150,6 +149,12 @@ module Lapidary::World
   end
 
   class YAMLFileLoader < Loader
+    include Lapidary::Misc::Logging
+
+    def initialize
+      @log = set_logger_name
+      super
+    end
     def check_login(session)
       # Check password validity
       unless validate_credentials(session.username, session.password)
@@ -180,7 +185,7 @@ module Lapidary::World
                                         aliases: true)
                   end
 
-        PROFILE_LOG.info "Retrieving profile: #{key}"
+        @log.info "Retrieving profile: #{key}"
 
         if profile.nil?
           default_profile(player)
@@ -198,8 +203,8 @@ module Lapidary::World
           player.settings = profile.settings || {}
         end
       rescue Exception => e
-        PROFILE_LOG.error "Unable to load profile"
-        PROFILE_LOG.error e
+        @log.error "Unable to load profile"
+        @log.error e
         return false
       end
 
@@ -209,7 +214,7 @@ module Lapidary::World
     def save_profile(player)
       key = Lapidary::Misc::NameUtils.format_name_protocol(player.name)
 
-      PROFILE_LOG.info "Storing profile: #{key}"
+      @log.info "Storing profile: #{key}"
 
       profile = Profile.new
       profile.hash = player.name_long

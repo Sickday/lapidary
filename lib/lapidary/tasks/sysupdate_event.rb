@@ -1,5 +1,7 @@
 module Lapidary::Tasks
   class SystemUpdateEvent < Lapidary::Engine::Event
+    include Lapidary::Misc::Logging
+    
     attr :state
     attr :seconds
   
@@ -7,6 +9,7 @@ module Lapidary::Tasks
       super(0)
       @seconds = seconds
       @state = :wait
+      @log = set_logger_name
     end
     
     def execute
@@ -44,12 +47,12 @@ module Lapidary::Tasks
     end
     
     def wait_for_saves
-      log = Logging.logger['sysupdate']
+      @log = Logging.logger['sysupdate']
     
       if WORLD.work_thread.busy
-        log.warn "Waiting for profiles to save..."
+        @log.warn 'Waiting for profiles to save...'
       else
-        log.warn "Shutting down"
+        @log.warn 'Shutting down'
         stop
         Kernel.exit!
       end
