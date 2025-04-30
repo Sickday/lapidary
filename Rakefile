@@ -8,8 +8,19 @@ task :run do
   require 'lapidary'
 
   WORLD = Lapidary::World::World.new
-  SERVER = Lapidary::Server.new(317)
-  SERVER.start_config(Lapidary::Misc::HashWrapper.new({:port => 43594}))
+
+  Lapidary.reactor.init
+  Lapidary.reactor.start_config({
+                                  game_host: '0.0.0.0',
+                                  game_port: 43_594,
+                                  jaggrab_host: '0.0.0.0',
+                                  jaggrab_port: 43_595,
+                                  ondemand_host: '0.0.0.0',
+                                  ondemand_port: 43_596,
+                                  http_host: '0.0.0.0',
+                                  http_port: 8080
+                                })
+  Lapidary.reactor.run
 end
 
 desc "Load 317 RS Cache"
