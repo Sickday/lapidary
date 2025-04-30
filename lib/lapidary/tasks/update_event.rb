@@ -1,7 +1,7 @@
 module Lapidary::Tasks
   class UpdateEvent < Lapidary::Engine::Event
     def initialize
-      super(600)
+      super(0.600)
     end
     
     def execute

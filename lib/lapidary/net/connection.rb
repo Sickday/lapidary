@@ -153,38 +153,6 @@ module Lapidary::Net
             @state = :login
           end
         end
-      when :update
-        if @buffer.length >= 4
-          cache_id = @buffer.read_byte.ubyte
-          file_id = @buffer.read_short.ushort
-          priority = @buffer.read_byte.ubyte
-          
-#          Logging.logger['cache'].debug "update server request (cache: #{cache_id}, file: #{file_id}, prio: #{priority})"
-          
-          data = $cache.get(cache_id + 1, file_id)
-          total_size = data.size
-          rounded_size = total_size
-          rounded_size += 1 while rounded_size % 500 != 0
-          blocks = rounded_size / 500
-          sent_bytes = 0
-          
-          blocks.times do |i|
-            pb = PacketBuilder.new(-1, :RAW)
-            block_size = total_size - sent_bytes
-            
-            pb.add_byte cache_id
-            pb.add_short file_id
-            pb.add_short total_size
-            pb.add_byte i
-            
-            block_size = 500 if block_size > 500
-            
-            pb.buffer << data.slice(sent_bytes, block_size)
-            
-            sent_bytes += block_size
-            send_data pb.to_packet
-          end
-        end
       when :login
         if @buffer.length >= 1
           # Name hash
@@ -195,12 +163,12 @@ module Lapidary::Net
           @state = :precrypted
 
           # Server update check
-          return if check_failed(SERVER.updatemode == false, "Server is in update mode"){
+          return if check_failed(Lapidary.reactor.updatemode == false, "Server is in update mode"){
             send_data (Array.new(8, 0) + [14]).pack("C" * 8 + "C")
           }
           
           # World full check
-          return if check_failed(WORLD.players.size < SERVER.max_players, "World full"){
+          return if check_failed(WORLD.players.size < Lapidary.reactor.max_players, "World full"){
             send_data (Array.new(8, 0) + [7]).pack("C" * 8 + "C")
           }
           
@@ -233,7 +201,7 @@ module Lapidary::Net
 
           # Version
           version = @buffer.read_short.ushort
-          return if check_failed(version == (SERVER.config.client_version || 317), "Incorrect client version: #{version}"){
+          return if check_failed(version == Lapidary::VERSION, "Incorrect client version: #{version}"){
             send_data [6].pack("C")
           }
 
@@ -244,8 +212,8 @@ module Lapidary::Net
 
           @enc_size -= 1
 
-          reported_size = @buffer.read_byte.ubyte
-          return if check_failed(reported_size == @enc_size, "Packet size mismatch (expected: #{@enc_size}, reported: #{reported_size})")
+          #reported_size = @buffer.read_byte.ubyte
+          #return if check_failed(reported_size == @enc_size, "Packet size mismatch (expected: #{@enc_size}, reported: #{reported_size})")
 
           block_opcode = @buffer.read_byte.ubyte
           return if check_failed(block_opcode == 10, "Invalid login block opcode: #{block_opcode}")

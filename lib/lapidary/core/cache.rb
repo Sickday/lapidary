@@ -15,11 +15,11 @@ module Lapidary::Misc
       raise "Cache files not installed! Please place them in the 'data/cache/<version>' directory" if count == 0
       
       # Gather file objects
-      @data_file = File.open(file_path("main_file_cache.dat", "#{path}/#{version}"), "r")
+      @data_file = File.open(file_path('main_file_cache.dat', "#{path}/#{version}"), 'r')
       @index_files = []
       
       count.times do |i|
-        @index_files << File.open(file_path("main_file_cache.idx#{i}", "#{path}/#{version}"), "r")
+        @index_files << File.open(file_path("main_file_cache.idx#{i}", "#{path}/#{version}"), 'r')
       end
     end
     
@@ -30,13 +30,13 @@ module Lapidary::Misc
       index_file = @index_files[cache]
       cache += 1
       
-      index = IO.read(index_file.path, INDEX_SIZE, INDEX_SIZE * file).unpack("c" * 6)
+      index = IO.read(index_file.path, INDEX_SIZE, INDEX_SIZE * file).unpack('c' * 6)
       file_size  = (index[0].ubyte << 16) | (index[1].ubyte << 8) | index[2].ubyte;
       file_block = (index[3].ubyte << 16) | (index[4].ubyte << 8) | index[5].ubyte;
       
       remaining_bytes = file_size
       current_block = file_block
-      buffer = ""
+      buffer = ''
       cycles = 0
       
       while remaining_bytes > 0
@@ -44,7 +44,7 @@ module Lapidary::Misc
         rem = @data_file.size - current_block * DATA_SIZE
         size = rem if rem < DATA_SIZE
         
-        header = IO.read(@data_file.path, DATA_HEADER_SIZE, current_block * DATA_SIZE).unpack("nncccc")
+        header = IO.read(@data_file.path, DATA_HEADER_SIZE, current_block * DATA_SIZE).unpack('nncccc')
         
         next_file_id = header[0]
         current_part_id = header[1]
@@ -59,11 +59,11 @@ module Lapidary::Misc
 
         remaining_bytes -= cycle_bytes
 
-        raise "Cycle does not match part id." if cycles != current_part_id
+        raise 'Cycle does not match part id.' if cycles != current_part_id
 
         if remaining_bytes > 0
-          raise "Unexpected next cache id." if next_cache_id != cache
-          raise "Unexpected next file id." if next_file_id != file
+          raise 'Unexpected next cache id.' if next_cache_id != cache
+          raise 'Unexpected next file id.' if next_file_id != file
         end
 
         cycles += 1

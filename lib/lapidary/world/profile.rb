@@ -4,6 +4,7 @@ module Lapidary::World
     attr_accessor :node
     attr_accessor :banned
     attr_accessor :member
+    attr_accessor :rights
     attr_accessor :x
     attr_accessor :y
     attr_accessor :z

@@ -80,8 +80,8 @@ module Lapidary::Objects
   end
   
   class ObjectEvent < Lapidary::Engine::Event
-     def initialize()
-       super(1000)
+     def initialize
+       super(0.9)
      end
      
      def execute
