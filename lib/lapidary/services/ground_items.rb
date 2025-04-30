@@ -48,7 +48,7 @@ module Lapidary::GroundItems
     attr :item
 
     def initialize(item)
-      super(30000)
+      super(0.6)
       @item = item
     end
     

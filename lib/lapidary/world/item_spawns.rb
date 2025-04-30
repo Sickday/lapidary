@@ -19,7 +19,7 @@ module Lapidary::World
   
   class ItemEvent < Lapidary::Engine::Event
     def initialize()
-      super(1000)
+      super(1)
     end
     
     def execute
